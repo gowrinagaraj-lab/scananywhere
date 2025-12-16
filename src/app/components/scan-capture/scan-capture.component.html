@@ -1,6 +1,12 @@
-   <h3>Batch Transfer</h3>
-    <p>Last scanned barcode:</p>
-    <strong>{{ lastScanned }}</strong>
-@if (barcodeValues) {
-  <p>    Scanned values: <label for="" class="fw-bold"> {{barcodeValues}}</label> </p>
-} 
+ <!-- Hidden scanning input -->
+<input
+  #scanInput
+  id="scanInput"
+  type="text"
+  (keydown)="onKeyDown($event)"
+  autocomplete="off"
+  autocorrect="off"
+  spellcheck="false"
+  style="opacity:0; position:absolute; left:-9999px;"
+>
+

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2 } from '@angular/core';
+import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ScanInputDirective } from '../../directives/scan-input.directive';
 import { ScannerService } from '../../scanner.service';
@@ -11,30 +11,37 @@ import { ScannerService } from '../../scanner.service';
   styleUrl: './scan-capture.component.scss'
 })
 export class ScanCaptureComponent {
-  lastScanned = '';
-  private sub!: Subscription;
-  barcodeValues: any=[];
 
-  constructor(private scanner: ScannerService) {}
+  @ViewChild('scanInput', { static: true }) scanInput!: ElementRef<HTMLInputElement>;
 
-  ngOnInit() {
-    this.sub = this.scanner.scan$.subscribe(code => {
-      this.lastScanned = code;
-      alert(this.lastScanned)
-      this.handleScan(code);
-    });
+  private focusTimer: any;
+
+  constructor(private scannerService: ScannerService) {}
+
+  ngAfterViewInit() {
+    this.forceFocus();
+
+    // iPad Safari loses focus often → re-focus every 700ms
+    this.focusTimer = setInterval(() => {
+ 
+      const el = this.scanInput.nativeElement;
+      if (document.activeElement !== el) {
+        el.focus();
+      }
+    }, 700);
   }
 
-  handleScan(barcode: string) {
-    // 🔥 Your app logic
-    // - Load product
-    // - Add to batch
-    // - Call API
-    console.log('Handling scan:', barcode);
-    this.barcodeValues.push(barcode)
+  forceFocus() {
+    const el = this.scanInput.nativeElement;
+    el.focus();
+    el.setSelectionRange(el.value.length, el.value.length);
+  }
+
+  onKeyDown(e: KeyboardEvent) {
+    this.scannerService.handleKeyEvent(e);
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    clearInterval(this.focusTimer);
   }
 }

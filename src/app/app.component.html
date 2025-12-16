@@ -1,9 +1,28 @@
 
 
+<app-scan-capture></app-scan-capture>
 <app-header></app-header>
 
 <div class="container">
-<app-scan-capture></app-scan-capture>
+ 
+<h2>Scanned Value:</h2>
+<div 
+  style="
+    padding: 12px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  ">
+  {{ barcode || 'Waiting for scan…' }}
+</div>
+
+<!-- Optional: Show history -->
+<h3>Scan History</h3>
+<ul>
+  <li *ngFor="let item of scanHistory">{{ item }}</li>
+</ul>
 </div>
 <!-- <p>app comp works</p> -->
 <router-outlet></router-outlet>
