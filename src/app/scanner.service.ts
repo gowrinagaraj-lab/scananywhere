@@ -8,50 +8,53 @@ export class ScannerService {
 
   private buffer = '';
   private lastTime = Date.now();
-  private interCharTimeout = 40;
-  private scanCompleteTimeout = 120;
+
+  // 🔥 Adjusted for iPad + HID scanners
+  private interCharTimeout = 80;        // scanner = <10ms, human ~120ms
+  private scanCompleteTimeout = 120;     // wait for end-of-scan
 
   private timer: any;
 
   private scanSubject = new Subject<string>();
   scan$ = this.scanSubject.asObservable();
 
-  /** Called by <app-scan-capture> input keydown */
+
+  public isConnected = false;
+
   public handleKeyEvent(e: KeyboardEvent) {
+
+    this.isConnected = true;
+
     const now = Date.now();
 
+   
     if (now - this.lastTime > this.interCharTimeout) {
-      this.buffer = '';
+      this.buffer = ''; 
     }
     this.lastTime = now;
 
-    // Add chars
     if (e.key.length === 1) {
       this.buffer += e.key;
     }
 
-    // Enter = end of scan
     if (e.key === 'Enter') {
       this.emitScan();
       return;
     }
-
-    // Auto complete
-    clearTimeout(this.timer);
+   clearTimeout(this.timer);
     this.timer = setTimeout(() => {
-      if (this.buffer.length >= 3) {
-        this.emitScan();
-      }
+      this.emitScan();
     }, this.scanCompleteTimeout);
   }
 
+  /** Emit cleaned barcode only if it is valid */
   private emitScan() {
-    const scanned = this.buffer.trim();
+    let scanned = this.buffer.trim();
     this.buffer = '';
-
-    if (scanned) {
-      this.scanSubject.next(scanned);
-      console.log("📦 Scanned:", scanned);
-    }
+   if (!scanned) return;
+   if (scanned.length < 4) return;
+    if (!/^\d+$/.test(scanned)) return;
+    console.log("📦 Barcode:", scanned);
+    this.scanSubject.next(scanned);
   }
 }

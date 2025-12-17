@@ -1,12 +1,11 @@
-import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { ScanInputDirective } from '../../directives/scan-input.directive';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ScannerService } from '../../scanner.service';
 
 @Component({
   selector: 'app-scan-capture',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './scan-capture.component.html',
   styleUrl: './scan-capture.component.scss'
 })
@@ -16,7 +15,7 @@ export class ScanCaptureComponent {
 
   private focusTimer: any;
 
-  constructor(private scannerService: ScannerService) {}
+  constructor(public scannerService: ScannerService) {}
 
   ngAfterViewInit() {
     this.forceFocus();

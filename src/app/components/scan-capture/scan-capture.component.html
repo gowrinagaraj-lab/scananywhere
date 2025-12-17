@@ -1,5 +1,13 @@
  <!-- Hidden scanning input -->
-<input
+
+<div *ngIf="scannerService.isConnected; else notConnected">
+  ✅ Scanner Connected
+</div>
+
+<ng-template #notConnected>
+  ❌ Scanner Not Connected
+</ng-template>
+ <input
   #scanInput
   id="scanInput"
   type="text"
